@@ -94,7 +94,7 @@ MIT License
 
 ## 反馈与支持
 
-- **问题反馈**：[GitHub Issues](https://github.com/LALOLE/TareToUE5/issues)
+- **问题反馈**：[GitHub Issues](https://github.com/weijinqianglll/TareToUE5)
 - **功能建议**：欢迎提交 Issue 或 Pull Request
 
 ## 更新日志
