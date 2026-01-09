@@ -1,0 +1,122 @@
+{
+  "name": "tareto-ue5",
+  "displayName": "TareToUE5",
+  "description": "专为Unreal Engine 5开发者打造的高效构建与调试工具。提供直观的可视化界面，简化UE项目的构建、编译、调试和执行流程。集成MSBuild构建系统，支持多种编译配置，实时进度反馈，让开发者专注于游戏开发本身，无需在命令行和IDE之间频繁切换。",
+  "version": "1.0.0",
+  "publisher": "LALOLE",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "unreal engine",
+    "ue5",
+    "unreal engine 5",
+    "game development",
+    "build tool",
+    "debug tool",
+    "msbuild",
+    "visual studio",
+    "game engine",
+    "c++",
+    "blueprint",
+    "development",
+    "compilation",
+    "project management"
+  ],
+  "activationEvents": [
+    "onView:ueBuilderPanel"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "ueBuilderContainer",
+          "title": "UE Builder",
+          "icon": "resources/icons/icon.png"
+        }
+      ]
+    },
+    "views": {
+      "ueBuilderContainer": [
+        {
+          "type": "webview",
+          "id": "ueBuilderPanel",
+          "name": "项目配置"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "ueBuilder.refresh",
+        "title": "刷新项目信息",
+        "icon": "refresh",
+        "category": "UE Builder"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "ueBuilder.refresh",
+          "when": "view == ueBuilderPanel",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "UE Builder",
+      "properties": {
+        "ueBuilder.uePath": {
+          "type": "string",
+          "default": "",
+          "description": "UE5 编辑器可执行文件的完整路径，例如：C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Binaries\\Win64\\UnrealEditor.exe"
+        },
+        "ueBuilder.projectPath": {
+          "type": "string",
+          "default": "",
+          "description": "UE 项目文件的完整路径，例如：D:\\Projects\\MyGame\\MyGame.uproject"
+        },
+        "ueBuilder.buildConfiguration": {
+          "type": "string",
+          "default": "Development",
+          "enum": [
+            "Debug",
+            "Development",
+            "Shipping",
+            "Test"
+          ],
+          "description": "编译配置类型：Debug（调试模式，包含完整调试信息）、Development（开发模式，平衡性能和调试）、Shipping（发布模式，优化性能）、Test（测试模式，包含测试功能）"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "20.x",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "@vscode/vsce": "^3.7.1",
+    "eslint": "^8.54.0",
+    "sharp": "^0.34.5",
+    "typescript": "^5.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LALOLE/TareToUE5"
+  },
+  "bugs": {
+    "url": "https://github.com/LALOLE/TareToUE5/issues"
+  },
+  "homepage": "https://github.com/LALOLE/TareToUE5#readme",
+  "icon": "resources/icons/icon.png"
+}

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UE Builder</title>
+    <link rel="stylesheet" href="webview.css">
+</head>
+<body>
+    <div class="container">
+        <div class="section">
+            <div class="section-title">配置</div>
+            <div class="info-row">
+                <span class="info-label">UE5 Editor Path:</span>
+            </div>
+            <div class="info-value" id="uePath" style="word-break: break-all; margin-bottom: 5px;">Not set</div>
+            <button onclick="selectUEPath()">选择引擎版本</button>
+            
+            <div class="info-row" style="margin-top: 15px;">
+                <span class="info-label">UE Project Path:</span>
+            </div>
+            <div class="info-value" id="projectPath" style="word-break: break-all; margin-bottom: 5px;">Not set</div>
+            <button onclick="selectProjectPath()">选择UE工程文件</button>
+            <button onclick="redetect()" style="margin-top: 5px;">重新检测</button>
+            
+            <div class="info-row" style="margin-top: 15px;">
+                <span class="info-label">Build Configuration:</span>
+            </div>
+            <select id="buildConfiguration">
+                <option value="Debug">Debug</option>
+                <option value="Development" selected>Development</option>
+                <option value="Shipping">Shipping</option>
+                <option value="Test">Test</option>
+            </select>
+        </div>
+
+        <div class="section">
+            <div class="section-title">生成</div>
+            <div class="button-row">
+                <button class="clean-button" id="cleanButton" onclick="cleanSolution()">清理解决方案</button>
+            </div>
+            <div class="button-row" style="margin-top: 10px;">
+                <button class="regenerate-button" id="regenerateButton" onclick="regenerateSolution()">重新生成解决方案</button>
+            </div>
+            <div class="button-row" style="margin-top: 10px;">
+                <button class="generate-button" id="generateButton" onclick="generateSolution()">生成解决方案</button>
+            </div>
+            <div class="button-row" style="margin-top: 10px;">
+                <button class="cancel-button" id="cancelButton" onclick="cancelBuild()" disabled>取消生成</button>
+            </div>
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="progress-bar" id="progressBar"></div>
+                <div class="progress-text" id="progressText">0%</div>
+            </div>
+            <div id="status" class="status"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">调试</div>
+            <div class="button-row">
+                <button class="debug-button" id="debugButton" onclick="startDebug()">开始调试</button>
+            </div>
+            <div class="button-row" style="margin-top: 10px;">
+                <button class="run-button" id="runButton" onclick="startWithoutDebug()">开始执行(不调试)</button>
+            </div>
+            <div class="button-row" style="margin-top: 10px;">
+                <button class="launch-button" id="launchButton" onclick="launchProject()">启动uproject</button>
+            </div>
+            <div class="button-row" style="margin-top: 10px;">
+                <button class="cancel-button" id="cancelDebugButton" onclick="cancelDebug()" disabled>取消调试/执行</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const vscode = acquireVsCodeApi();
+        
+        window.addEventListener('message', event => {
+            const message = event.data;
+            console.log('Webview received message:', message);
+            switch (message.type) {
+                case 'update':
+                    document.getElementById('uePath').textContent = message.uePath || 'Not set';
+                    document.getElementById('projectPath').textContent = message.projectPath || 'Not set';
+                    document.getElementById('buildConfiguration').value = message.buildConfiguration;
+                    console.log('Webview updated - projectPath:', message.projectPath);
+                    break;
+                case 'buildStarted':
+                    showStatus('正在执行...', 'loading');
+                    disableAllButtons(true);
+                    document.getElementById('cancelButton').disabled = false;
+                    document.getElementById('progressContainer').style.display = 'block';
+                    updateProgress(0);
+                    break;
+                case 'buildProgress':
+                    updateProgress(message.progress);
+                    showStatus(message.message || '正在执行...', 'loading');
+                    break;
+                case 'buildSuccess':
+                    showStatus('操作成功!', 'success');
+                    disableAllButtons(false);
+                    document.getElementById('cancelButton').disabled = true;
+                    document.getElementById('progressContainer').style.display = 'none';
+                    updateProgress(100);
+                    break;
+                case 'buildFailed':
+                    showStatus('操作失败: ' + message.error, 'error');
+                    disableAllButtons(false);
+                    document.getElementById('cancelButton').disabled = true;
+                    document.getElementById('progressContainer').style.display = 'none';
+                    break;
+                case 'buildCancelled':
+                    showStatus('操作已取消', 'info');
+                    disableAllButtons(false);
+                    document.getElementById('cancelButton').disabled = true;
+                    document.getElementById('progressContainer').style.display = 'none';
+                    break;
+                case 'debugStarted':
+                    showStatus('正在调试/执行...', 'loading');
+                    disableAllButtons(true);
+                    document.getElementById('cancelDebugButton').disabled = false;
+                    break;
+                case 'debugSuccess':
+                    showStatus('调试/执行成功!', 'success');
+                    disableAllButtons(false);
+                    document.getElementById('cancelDebugButton').disabled = true;
+                    break;
+                case 'debugFailed':
+                    showStatus('调试/执行失败: ' + message.error, 'error');
+                    disableAllButtons(false);
+                    document.getElementById('cancelDebugButton').disabled = true;
+                    break;
+                case 'debugCancelled':
+                    showStatus('调试/执行已取消', 'info');
+                    disableAllButtons(false);
+                    document.getElementById('cancelDebugButton').disabled = true;
+                    break;
+            }
+        });
+
+        function disableAllButtons(disabled) {
+            document.getElementById('cleanButton').disabled = disabled;
+            document.getElementById('regenerateButton').disabled = disabled;
+            document.getElementById('generateButton').disabled = disabled;
+            document.getElementById('debugButton').disabled = disabled;
+            document.getElementById('runButton').disabled = disabled;
+            document.getElementById('launchButton').disabled = disabled;
+        }
+
+        function selectUEPath() {
+            vscode.postMessage({ type: 'selectUEPath' });
+        }
+
+        function selectProjectPath() {
+            vscode.postMessage({ type: 'selectProjectPath' });
+        }
+
+        function redetect() {
+            vscode.postMessage({ type: 'redetect' });
+        }
+
+        function cleanSolution() {
+            const config = {
+                uePath: document.getElementById('uePath').textContent,
+                projectPath: document.getElementById('projectPath').textContent,
+                buildConfiguration: document.getElementById('buildConfiguration').value
+            };
+            vscode.postMessage({ type: 'cleanSolution', config });
+        }
+
+        function regenerateSolution() {
+            const config = {
+                uePath: document.getElementById('uePath').textContent,
+                projectPath: document.getElementById('projectPath').textContent,
+                buildConfiguration: document.getElementById('buildConfiguration').value
+            };
+            vscode.postMessage({ type: 'regenerateSolution', config });
+        }
+
+        function generateSolution() {
+            const config = {
+                uePath: document.getElementById('uePath').textContent,
+                projectPath: document.getElementById('projectPath').textContent,
+                buildConfiguration: document.getElementById('buildConfiguration').value
+            };
+            vscode.postMessage({ type: 'generateSolution', config });
+        }
+
+        function startDebug() {
+            const config = {
+                uePath: document.getElementById('uePath').textContent,
+                projectPath: document.getElementById('projectPath').textContent,
+                buildConfiguration: document.getElementById('buildConfiguration').value
+            };
+            vscode.postMessage({ type: 'startDebug', config });
+        }
+
+        function startWithoutDebug() {
+            const config = {
+                uePath: document.getElementById('uePath').textContent,
+                projectPath: document.getElementById('projectPath').textContent,
+                buildConfiguration: document.getElementById('buildConfiguration').value
+            };
+            vscode.postMessage({ type: 'startWithoutDebug', config });
+        }
+
+        function launchProject() {
+            const config = {
+                uePath: document.getElementById('uePath').textContent,
+                projectPath: document.getElementById('projectPath').textContent,
+                buildConfiguration: document.getElementById('buildConfiguration').value
+            };
+            vscode.postMessage({ type: 'launchProject', config });
+        }
+
+        function cancelBuild() {
+            vscode.postMessage({ type: 'cancelBuild' });
+        }
+
+        function cancelDebug() {
+            vscode.postMessage({ type: 'cancelDebug' });
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = 'status ' + type;
+        }
+
+        function updateProgress(progress) {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            progressBar.style.width = progress + '%';
+            progressText.textContent = Math.round(progress) + '%';
+        }
+    </script>
+</body>
+</html>

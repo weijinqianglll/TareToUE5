@@ -1,0 +1,189 @@
+body {
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+    color: var(--vscode-foreground);
+    background-color: var(--vscode-editor-background);
+    padding: 10px;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.section {
+    background-color: var(--vscode-editor-inactiveSelectionBackground);
+    padding: 15px;
+    border-radius: 5px;
+}
+.section-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: var(--vscode-textLink-foreground);
+}
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+.info-label {
+    color: var(--vscode-descriptionForeground);
+}
+.info-value {
+    color: var(--vscode-foreground);
+    font-weight: 500;
+}
+button {
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 13px;
+    width: 100%;
+    margin-top: 5px;
+}
+button:hover {
+    background-color: var(--vscode-button-hoverBackground);
+}
+button:disabled {
+    background-color: var(--vscode-button-secondaryBackground);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+button:disabled:hover {
+    background-color: var(--vscode-button-secondaryBackground);
+}
+select {
+    width: 100%;
+    padding: 5px;
+    background-color: var(--vscode-dropdown-background);
+    color: var(--vscode-dropdown-foreground);
+    border: 1px solid var(--vscode-dropdown-border);
+    border-radius: 3px;
+    margin-top: 5px;
+}
+.build-button {
+    background-color: #007ACC;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px;
+}
+.build-button:hover {
+    background-color: #005A9E;
+}
+.clean-button {
+    background-color: #9E9E9E;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px;
+}
+.clean-button:hover {
+    background-color: #757575;
+}
+.regenerate-button {
+    background-color: #FF9800;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px;
+}
+.regenerate-button:hover {
+    background-color: #F57C00;
+}
+.generate-button {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px;
+}
+.generate-button:hover {
+    background-color: #45a049;
+}
+.regenerate-files-button {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px;
+}
+.regenerate-files-button:hover {
+    background-color: #45a049;
+}
+.cancel-button {
+    background-color: #f44336;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px;
+}
+.cancel-button:hover {
+    background-color: #d32f2f;
+}
+.debug-button {
+    background-color: #9C27B0;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px;
+}
+.debug-button:hover {
+    background-color: #7B1FA2;
+}
+.run-button {
+    background-color: #2196F3;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px;
+}
+.run-button:hover {
+    background-color: #1976D2;
+}
+.launch-button {
+    background-color: #00BCD4;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px;
+}
+.launch-button:hover {
+    background-color: #0097A7;
+}
+.status {
+    padding: 10px;
+    border-radius: 3px;
+    margin-top: 10px;
+    display: none;
+}
+.status.success {
+    background-color: #4CAF50;
+    color: white;
+    display: block;
+}
+.status.error {
+    background-color: #f44336;
+    color: white;
+    display: block;
+}
+.status.loading {
+    background-color: #FF9800;
+    color: white;
+    display: block;
+}
+.status.info {
+    background-color: #2196F3;
+    color: white;
+    display: block;
+}
+.button-row {
+    display: flex;
+    gap: 10px;
+}
+.button-row button {
+    flex: 1;
+}
