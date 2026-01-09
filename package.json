@@ -112,11 +112,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/LALOLE/TareToUE5"
+    "url": "https://github.com/weijinqianglll/TareToUE5"
   },
   "bugs": {
-    "url": "https://github.com/LALOLE/TareToUE5/issues"
+    "url": "https://github.com/weijinqianglll/TareToUE5/issues"
   },
-  "homepage": "https://github.com/LALOLE/TareToUE5#readme",
+  "homepage": "https://github.com/weijinqianglll/TareToUE5#readme",
   "icon": "resources/icons/icon.png"
 }
